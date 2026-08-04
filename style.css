@@ -655,3 +655,12 @@ RESPONSIVE
 @keyframes splashFadeOut{
   to{ opacity:0; visibility:hidden; }
 }
+
+/* Reports view — single large "Sold of total" card */
+.dashboard-single{ grid-template-columns:1fr; max-width:26rem; }
+.dash-card-large{
+  padding:2.8rem 2.6rem 2.4rem;
+  align-items:flex-start;
+}
+.dash-card-large h2{ font-size:clamp(3.2rem, 3vw + 2rem, 4.6rem); }
+.dash-card-large p{ font-size:0.9rem; }
