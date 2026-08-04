@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pardis Properties | Projects</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B345C">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pardis CRM">
+</head>
+<body class="landing-body themed-bg">
+<div id="appSplash">
+  <img src="images/pardis-flame.png" alt="" class="splash-flame">
+  <img src="images/pardis-wordmark.png" alt="Pardis" class="splash-word">
+</div>
+<script>
+(function () {
+  var splash = document.getElementById("appSplash");
+  var MIN_SHOW = 1300; // ms — lets the flame + wordmark animation finish
+  var start = Date.now();
+  var removed = false;
+
+  function remove() {
+    if (removed) return;
+    removed = true;
+    if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+  }
+
+  window.addEventListener("load", function () {
+    var wait = Math.max(0, MIN_SHOW - (Date.now() - start));
+    setTimeout(function () {
+      if (!splash) return;
+      splash.classList.add("splash-hide");
+      splash.addEventListener("animationend", remove, { once: true });
+      setTimeout(remove, 600); // fallback in case animations are disabled
+    }, wait);
+  });
+})();
+</script>
+
+<div class="landing">
+
+  <header class="landing-header">
+    <img src="images/pardis-logo.png" alt="Pardis" class="brand-logo">
+    <p class="landing-sub">Select a project to open its live inventory.</p>
+  </header>
+
+  <section class="project-grid" id="projectGrid">
+
+    <a class="project-card" href="dashboard.html">
+      <div class="project-card-image">
+        <img src="images/sai-saburi.jpg" alt="Sai Saburi building render">
+        <span class="project-card-badge">Live</span>
+      </div>
+      <div class="project-card-body">
+        <h2>Sai Saburi</h2>
+        <p class="project-card-loc">Pardis Properties</p>
+
+        <div class="project-stat-row" id="saiSaburiStats">
+          <span class="project-stat"><b id="ps-total">—</b>Total</span>
+          <span class="project-stat"><b id="ps-available">—</b>Available</span>
+          <span class="project-stat"><b id="ps-hold">—</b>Hold</span>
+          <span class="project-stat"><b id="ps-sold">—</b>Sold</span>
+        </div>
+
+        <div class="project-progress">
+          <div class="project-progress-track">
+            <div class="project-progress-fill" id="ps-progress-fill"></div>
+          </div>
+          <span class="project-progress-label" id="ps-progress-label">— sold</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="project-card" href="chitragandha.html">
+      <div class="project-card-image">
+        <img src="images/chitragandha.jpg" alt="Chitragandha building render">
+        <span class="project-card-badge">Live</span>
+      </div>
+      <div class="project-card-body">
+        <h2>Chitragandha</h2>
+        <p class="project-card-loc">Pardis Properties</p>
+
+        <div class="project-stat-row" id="chitragandhaStats">
+          <span class="project-stat"><b id="cg-total">—</b>Total</span>
+          <span class="project-stat"><b id="cg-available">—</b>Available</span>
+          <span class="project-stat"><b id="cg-hold">—</b>Hold</span>
+          <span class="project-stat"><b id="cg-sold">—</b>Sold</span>
+        </div>
+
+        <div class="project-progress">
+          <div class="project-progress-track">
+            <div class="project-progress-fill" id="cg-progress-fill"></div>
+          </div>
+          <span class="project-progress-label" id="cg-progress-label">— sold</span>
+        </div>
+      </div>
+    </a>
+
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+async function loadProjectStats(projectName, prefix) {
+    const { data, error } = await db
+        .from("units")
+        .select("status")
+        .eq("project", projectName);
+
+    if (error || !data) return;
+
+    const total = data.length;
+    const available = data.filter(u => u.status === "available").length;
+    const hold = data.filter(u => u.status === "hold").length;
+    const sold = data.filter(u => u.status === "sold").length;
+    const pct = total ? Math.round((sold / total) * 100) : 0;
+
+    document.getElementById(prefix + "-total").textContent = total;
+    document.getElementById(prefix + "-available").textContent = available;
+    document.getElementById(prefix + "-hold").textContent = hold;
+    document.getElementById(prefix + "-sold").textContent = sold;
+    document.getElementById(prefix + "-progress-fill").style.width = pct + "%";
+    document.getElementById(prefix + "-progress-label").textContent = pct + "% sold";
+}
+
+loadProjectStats("Sai Saburi", "ps");
+loadProjectStats("Chitragandha", "cg");
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+}
+</script>
+</body>
+</html>

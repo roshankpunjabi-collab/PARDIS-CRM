@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pardis Properties | Chitragandha CRM</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B345C">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pardis CRM">
+</head>
+<body class="themed-bg" data-project="Chitragandha">
+<div id="appSplash">
+  <img src="images/pardis-flame.png" alt="" class="splash-flame">
+  <img src="images/pardis-wordmark.png" alt="Pardis" class="splash-word">
+</div>
+<script>
+(function () {
+  var splash = document.getElementById("appSplash");
+  var MIN_SHOW = 1300; // ms — lets the flame + wordmark animation finish
+  var start = Date.now();
+  var removed = false;
+
+  function remove() {
+    if (removed) return;
+    removed = true;
+    if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+  }
+
+  window.addEventListener("load", function () {
+    var wait = Math.max(0, MIN_SHOW - (Date.now() - start));
+    setTimeout(function () {
+      if (!splash) return;
+      splash.classList.add("splash-hide");
+      splash.addEventListener("animationend", remove, { once: true });
+      setTimeout(remove, 600); // fallback in case animations are disabled
+    }, wait);
+  });
+})();
+</script>
+
+<!-- ===========================
+SIDEBAR
+=========================== -->
+<div class="sidebar">
+
+  <a href="index.html" class="logo-plate">
+    <img src="images/pardis-logo.png" alt="Pardis" class="brand-logo brand-logo-sidebar">
+  </a>
+
+  <nav>
+    <a href="#" class="nav-link active" data-view="dashboard"><span class="nav-ic">⌂</span> Dashboard</a>
+    <a href="#" class="nav-link" data-view="inventory"><span class="nav-ic">▦</span> Inventory</a>
+    <a href="#" class="nav-link" data-view="customers"><span class="nav-ic">☺</span> Customers</a>
+    <a href="#" class="nav-link" data-view="reports"><span class="nav-ic">▤</span> Reports</a>
+    <a href="#" class="nav-link" data-view="settings"><span class="nav-ic">⚙</span> Settings</a>
+  </nav>
+
+  <div class="sidebar-foot">
+    <span class="proj-label">Current project</span>
+    <span class="proj-name">Chitragandha</span>
+  </div>
+
+</div>
+
+<!-- ===========================
+MAIN
+=========================== -->
+<div class="main">
+
+  <header>
+    <div>
+      <span class="eyebrow" id="viewEyebrow">Live Inventory Management</span>
+      <h1 id="viewTitle">Chitragandha</h1>
+    </div>
+    <div class="avatar">PP</div>
+  </header>
+
+  <!-- ===========================
+  DASHBOARD VIEW
+  =========================== -->
+  <section class="view active" id="view-dashboard">
+
+    <section class="dashboard">
+
+      <div class="dash-card">
+        <h2 id="totalUnits">0</h2>
+        <p>Total units</p>
+        <span class="dash-bar bar-total"></span>
+      </div>
+
+      <div class="dash-card">
+        <h2 id="availableUnits">0</h2>
+        <p>Available</p>
+        <span class="dash-bar bar-available"></span>
+      </div>
+
+      <div class="dash-card">
+        <h2 id="holdUnits">0</h2>
+        <p>Hold</p>
+        <span class="dash-bar bar-hold"></span>
+      </div>
+
+      <div class="dash-card">
+        <h2 id="soldUnits">0</h2>
+        <p>Sold</p>
+        <span class="dash-bar bar-sold"></span>
+      </div>
+
+    </section>
+
+    <section class="dash-grid">
+
+      <div class="panel">
+        <div class="panel-head"><h2>Status by floor</h2></div>
+        <div class="bar-chart" id="floorStatusChart"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Recently updated</h2></div>
+        <ul class="mini-list" id="recentUpdatesList"></ul>
+      </div>
+
+    </section>
+
+  </section>
+
+  <!-- ===========================
+  INVENTORY VIEW
+  =========================== -->
+  <section class="view" id="view-inventory">
+
+    <section class="toolbar">
+      <input type="text" id="search" placeholder="Search by unit number…">
+      <select id="typeFilter">
+        <option value="all">All types</option>
+      </select>
+      <select id="statusFilter">
+        <option value="all">All status</option>
+        <option value="available">Available</option>
+        <option value="hold">Hold</option>
+        <option value="sold">Sold</option>
+      </select>
+      <div class="view-toggle" id="viewToggle">
+        <button class="view-btn active" data-view="floor">By floor</button>
+        <button class="view-btn" data-view="grid">All units</button>
+      </div>
+    </section>
+
+    <section id="inventoryGrid" class="inventory"></section>
+
+  </section>
+
+  <!-- ===========================
+  CUSTOMERS VIEW
+  =========================== -->
+  <section class="view" id="view-customers">
+
+    <section class="toolbar">
+      <input type="text" id="customerSearch" placeholder="Search by client, phone, or executive…">
+      <select id="customerStatusFilter">
+        <option value="all">All status</option>
+        <option value="hold">Hold</option>
+        <option value="sold">Sold</option>
+      </select>
+    </section>
+
+    <div class="table-wrap">
+      <table class="cust-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Unit</th>
+            <th>Executive</th>
+            <th>Status</th>
+            <th class="num-cell">Consideration</th>
+            <th class="num-cell">Slab</th>
+            <th class="num-cell">%</th>
+            <th class="num-cell">Demand</th>
+            <th class="num-cell">Received</th>
+            <th class="num-cell">Balance</th>
+            <th>Last updated</th>
+          </tr>
+        </thead>
+        <tbody id="customersTableBody"></tbody>
+      </table>
+      <p class="empty-state-inline" id="customersEmpty" hidden>No customer records yet — assign a client to a unit from the Inventory tab to see them here.</p>
+    </div>
+
+  </section>
+
+  <!-- ===========================
+  REPORTS VIEW
+  =========================== -->
+  <section class="view" id="view-reports">
+
+    <section class="dashboard">
+      <div class="dash-card">
+        <h2 id="repConversion">0%</h2>
+        <p>Sold of total</p>
+        <span class="dash-bar bar-sold"></span>
+      </div>
+      <div class="dash-card">
+        <h2 id="repSoldValue">0</h2>
+        <p>Sold value</p>
+        <span class="dash-bar bar-available"></span>
+      </div>
+      <div class="dash-card">
+        <h2 id="repHoldValue">0</h2>
+        <p>Value on hold</p>
+        <span class="dash-bar bar-hold"></span>
+      </div>
+      <div class="dash-card">
+        <h2 id="repAvgTicket">0</h2>
+        <p>Avg. sold price</p>
+        <span class="dash-bar bar-total"></span>
+      </div>
+    </section>
+
+    <section class="dash-grid">
+
+      <div class="panel">
+        <div class="panel-head"><h2>Sales by executive</h2></div>
+        <div class="table-wrap flush">
+          <table class="cust-table">
+            <thead>
+              <tr><th>Executive</th><th>Sold</th><th>Hold</th><th>Value closed</th></tr>
+            </thead>
+            <tbody id="execTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Inventory by unit type</h2></div>
+        <div class="bar-chart" id="typeChart"></div>
+      </div>
+
+    </section>
+
+  </section>
+
+  <!-- ===========================
+  SETTINGS VIEW (placeholder)
+  =========================== -->
+  <section class="view" id="view-settings">
+    <div class="empty-state">
+      <h2>Settings</h2>
+      <p>Nothing configurable here yet.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===========================
+POPUP
+=========================== -->
+<div id="popup" class="popup">
+  <div class="popup-box">
+
+    <div class="popup-header">
+      <div>
+        <span class="popup-eyebrow">Unit details</span>
+        <h2 id="popupTitle">Unit</h2>
+      </div>
+      <button id="closePopup">&times;</button>
+    </div>
+
+    <div class="popup-body">
+
+      <label>Status</label>
+      <select id="status">
+        <option value="available">Available</option>
+        <option value="hold">Hold</option>
+        <option value="sold">Sold</option>
+      </select>
+
+      <div class="popup-row">
+        <div>
+          <label>Client name</label>
+          <input type="text" id="client" placeholder="Client name">
+        </div>
+        <div>
+          <label>Phone</label>
+          <input type="text" id="phone" placeholder="Phone number">
+          <a href="#" id="whatsappLink" class="wa-link" target="_blank" rel="noopener" hidden>💬 Chat on WhatsApp</a>
+        </div>
+      </div>
+
+      <div class="popup-row">
+        <div>
+          <label>Email</label>
+          <input type="email" id="email" placeholder="client@example.com">
+          <a href="#" id="mailLink" class="mail-link" hidden>✉ Email client</a>
+        </div>
+        <div>
+          <label>Sales executive</label>
+          <input type="text" id="executive" placeholder="Executive name">
+        </div>
+      </div>
+
+      <div class="popup-row">
+        <div>
+          <label>Consideration value</label>
+          <input type="text" id="price" placeholder="Agreement value">
+        </div>
+        <div>
+          <label>Payment slab</label>
+          <input type="text" id="slab" placeholder="e.g. 10">
+        </div>
+      </div>
+
+      <div class="popup-row">
+        <div>
+          <label>% paid</label>
+          <input type="text" id="percentPaid" placeholder="e.g. 75">
+        </div>
+        <div>
+          <label>Demand raised</label>
+          <input type="text" id="demandAmount" placeholder="Amount demanded">
+        </div>
+      </div>
+
+      <div class="popup-row">
+        <div>
+          <label>Received to date</label>
+          <input type="text" id="amountReceived" placeholder="Amount received">
+        </div>
+        <div>
+          <label>Balance against demand</label>
+          <input type="text" id="balanceAmount" placeholder="Balance owed">
+        </div>
+      </div>
+
+      <label>Notes</label>
+      <textarea id="notes" rows="4" placeholder="Today's follow-up…"></textarea>
+
+      <button id="saveButton">Save information</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===========================
+TOAST
+=========================== -->
+<div id="toast" class="toast">Information saved successfully</div>
+
+<!-- ===========================
+JAVASCRIPT
+=========================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+}
+</script>
+</body>
+</html>
