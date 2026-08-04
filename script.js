@@ -181,7 +181,7 @@ function renderDashboardPanels() {
         byFloor[u.floor].total++;
     });
 
-    const floors = Object.keys(byFloor).map(Number).sort((a, b) => b - a);
+    const floors = Object.keys(byFloor).map(Number).sort((a, b) => a - b);
     const chartEl = document.getElementById("floorStatusChart");
 
     chartEl.innerHTML = floors.map(floor => {
@@ -323,7 +323,7 @@ function renderFloorBands(list) {
         byFloor[u.floor].push(u);
     });
 
-    const floors = Object.keys(byFloor).map(Number).sort((a, b) => b - a);
+    const floors = Object.keys(byFloor).map(Number).sort((a, b) => a - b);
 
     floors.forEach(floor => {
 
@@ -491,17 +491,10 @@ function formatCurrency(n) {
 function renderReports() {
 
     const sold = units.filter(u => u.status === "sold");
-    const hold = units.filter(u => u.status === "hold");
 
-    const soldValue = sold.reduce((s, u) => s + parsePrice(u.price), 0);
-    const holdValue = hold.reduce((s, u) => s + parsePrice(u.price), 0);
-    const avgTicket = sold.length ? soldValue / sold.length : 0;
     const conversion = units.length ? (sold.length / units.length) * 100 : 0;
 
     document.getElementById("repConversion").textContent = conversion.toFixed(1) + "%";
-    document.getElementById("repSoldValue").textContent = formatCurrency(soldValue);
-    document.getElementById("repHoldValue").textContent = formatCurrency(holdValue);
-    document.getElementById("repAvgTicket").textContent = formatCurrency(avgTicket);
 
     // Sales by executive
     const byExec = {};
