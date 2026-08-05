@@ -57,7 +57,7 @@
 
   <section class="project-grid" id="projectGrid">
 
-    <a class="project-card" href="dashboard.html">
+    <a class="project-card" href="dashboard.html" data-gate-password="2222">
       <div class="project-card-image">
         <img src="images/sai-saburi.jpg" alt="Sai Saburi building render">
         <span class="project-card-badge">Live</span>
@@ -82,7 +82,7 @@
       </div>
     </a>
 
-    <a class="project-card" href="chitragandha.html">
+    <a class="project-card" href="chitragandha.html" data-gate-password="2222">
       <div class="project-card-image">
         <img src="images/chitragandha.jpg" alt="Chitragandha building render">
         <span class="project-card-badge">Live</span>
@@ -109,6 +109,22 @@
 
   </section>
 
+</div>
+
+<!-- ===========================
+PROJECT PASSWORD GATE
+=========================== -->
+<div id="gateOverlay" class="gate-overlay" hidden>
+  <div class="gate-box">
+    <span class="gate-eyebrow">Password required</span>
+    <h2 id="gateTitle">Enter password</h2>
+    <input type="password" id="gateInput" placeholder="Password" autocomplete="off">
+    <p class="gate-error" id="gateError" hidden>Incorrect password — try again.</p>
+    <div class="gate-actions">
+      <button type="button" id="gateCancel" class="gate-btn-secondary">Cancel</button>
+      <button type="button" id="gateSubmit" class="gate-btn-primary">Open</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -138,6 +154,67 @@ async function loadProjectStats(projectName, prefix) {
 
 loadProjectStats("Sai Saburi", "ps");
 loadProjectStats("Chitragandha", "cg");
+
+// ===========================
+// PROJECT PASSWORD GATE
+// Prompts fresh every single click — nothing is remembered
+// between visits or between cards.
+// ===========================
+(function () {
+    const overlay = document.getElementById("gateOverlay");
+    const input = document.getElementById("gateInput");
+    const title = document.getElementById("gateTitle");
+    const error = document.getElementById("gateError");
+    const submitBtn = document.getElementById("gateSubmit");
+    const cancelBtn = document.getElementById("gateCancel");
+
+    let pendingHref = null;
+    let pendingPassword = null;
+
+    function openGate(card) {
+        pendingHref = card.getAttribute("href");
+        pendingPassword = card.getAttribute("data-gate-password");
+        const projectName = card.querySelector("h2") ? card.querySelector("h2").textContent : "this project";
+        title.textContent = "Enter password for " + projectName;
+        error.hidden = true;
+        input.value = "";
+        overlay.hidden = false;
+        setTimeout(() => input.focus(), 50);
+    }
+
+    function closeGate() {
+        overlay.hidden = true;
+        pendingHref = null;
+        pendingPassword = null;
+    }
+
+    function attemptSubmit() {
+        if (input.value === pendingPassword) {
+            window.location.href = pendingHref;
+        } else {
+            error.hidden = false;
+            input.value = "";
+            input.focus();
+        }
+    }
+
+    document.querySelectorAll(".project-card[data-gate-password]").forEach((card) => {
+        card.addEventListener("click", (e) => {
+            e.preventDefault();
+            openGate(card);
+        });
+    });
+
+    submitBtn.addEventListener("click", attemptSubmit);
+    cancelBtn.addEventListener("click", closeGate);
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) closeGate();
+    });
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") attemptSubmit();
+        if (e.key === "Escape") closeGate();
+    });
+})();
 </script>
 
 <script>
