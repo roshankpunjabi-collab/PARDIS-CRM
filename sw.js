@@ -1,4 +1,4 @@
-const CACHE_NAME = "pardis-crm-v2";
+const CACHE_NAME = "pardis-crm-v4";
 
 const APP_SHELL = [
   "index.html",
